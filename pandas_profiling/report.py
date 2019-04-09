@@ -33,8 +33,8 @@ def to_html(sample, stats_object):
     value_formatters = formatters.value_formatters
     row_formatters = formatters.row_formatters
 
-    if not isinstance(sample, pd.DataFrame):
-        raise TypeError("sample must be of type pandas.DataFrame")
+#    if not isinstance(sample, pd.DataFrame):
+#        raise TypeError("sample must be of type pandas.DataFrame")
 
     if not isinstance(stats_object, dict):
         raise TypeError("stats_object must be of type dict. Did you generate this using the pandas_profiling.describe() function?")

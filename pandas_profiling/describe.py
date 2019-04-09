@@ -324,10 +324,10 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
         * The section dedicated to check the correlation should be externalized
     """
 
-    if not isinstance(df, pd.DataFrame):
-        raise TypeError("df must be of type pandas.DataFrame")
-    if df.empty:
-        raise ValueError("df can not be empty")
+#    if not isinstance(df, pd.DataFrame):
+#        raise TypeError("df must be of type pandas.DataFrame")
+#    if df.empty:
+#        raise ValueError("df can not be empty")
 
     try:
         # reset matplotlib style before use
@@ -341,9 +341,10 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
     # Clearing the cache before computing stats
     base.clear_cache()
 
-    if not pd.Index(np.arange(0, len(df))).equals(df.index):
-        # Treat index as any other column
-        df = df.reset_index()
+#    if not pd.Index(np.arange(0, len(df))).equals(df.index):
+#        # Treat index as any other column
+#        df = df.reset_index()
+    df = df.reset_index()
 
     kwargs.update({'bins': bins})
     # Describe all variables in a univariate way
