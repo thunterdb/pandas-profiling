@@ -48,7 +48,7 @@ def describe_numeric_1d(series, **kwargs):
     stats['sum'] = series.sum()
     stats['mad'] = series.mad()
     stats['cv'] = stats['std'] / stats['mean'] if stats['mean'] else np.NaN
-    stats['n_zeros'] = (len(series) - np.count_nonzero(series))
+    stats['n_zeros'] = series.isnull().astype("int").sum()
     stats['p_zeros'] = stats['n_zeros'] * 1.0 / len(series)
     # Histograms
     stats['histogram'] = histogram(series, **kwargs)
@@ -96,6 +96,7 @@ def describe_categorical_1d(series):
     """
     # Only run if at least 1 non-missing value
     value_counts, distinct_count = base.get_groupby_statistic(series)
+    value_counts = value_counts.head(1).to_dense()
     top, freq = value_counts.index[0], value_counts.iloc[0]
     names = []
     result = []
@@ -120,6 +121,7 @@ def describe_boolean_1d(series):
         The description of the variable as a Series with index being stats keys.
     """
     value_counts, distinct_count = base.get_groupby_statistic(series)
+    value_counts = value_counts.head(1).to_dense()
     top, freq = value_counts.index[0], value_counts.iloc[0]
     # The mean of boolean is an interesting information
     mean = series.mean()
@@ -405,7 +407,7 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
     table_stats['nvar'] = len(df.columns)
     table_stats['total_missing'] = variable_stats.loc['n_missing'].sum() / (table_stats['n'] * table_stats['nvar'])
     unsupported_columns = variable_stats.transpose()[variable_stats.transpose().type != base.S_TYPE_UNSUPPORTED].index.tolist()
-    table_stats['n_duplicates'] = sum(df.duplicated(subset=unsupported_columns)) if len(unsupported_columns) > 0 else 0
+    table_stats['n_duplicates'] = df.duplicated(subset=unsupported_columns).sum() if len(unsupported_columns) > 0 else 0
 
     memsize = df.memory_usage(index=True).sum()
     table_stats['memsize'] = formatters.fmt_bytesize(memsize)

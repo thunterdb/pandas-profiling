@@ -47,6 +47,7 @@ def get_groupby_statistic(data):
     value_counts_with_nan = data.value_counts(dropna=False)
     value_counts_without_nan = value_counts_with_nan.reset_index()
     value_counts_without_nan = value_counts_without_nan[value_counts_without_nan["index"].notnull()].set_index("index")
+    value_counts_without_nan = value_counts_without_nan[value_counts_without_nan.columns[0]]
     distinct_count_with_nan = value_counts_with_nan.count()
 
     # When the inferred type of the index is just "mixed" probably the types within the series are tuple, dict, list and so on...

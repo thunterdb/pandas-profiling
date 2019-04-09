@@ -44,8 +44,10 @@ def to_html(sample, stats_object):
             "stats_object badly formatted. Did you generate this using the pandas_profiling.describe() function?")
 
     def fmt(value, name):
-        if pd.isnull(value):
+        if value is None or value != value:
             return ""
+        #if pd.isnull(value):
+        #    return ""
         if name in value_formatters:
             return value_formatters[name](value)
         elif isinstance(value, float):
@@ -92,7 +94,7 @@ def to_html(sample, stats_object):
             freq_other = 0
             min_freq = 0
 
-        freq_missing = n - sum(freqtable)
+        freq_missing = n - freqtable.sum()
         max_freq = max(freqtable.values[0], freq_other, freq_missing)
 
         # TODO: Correctly sort missing and other
@@ -149,11 +151,11 @@ def to_html(sample, stats_object):
                 messages.append(templates.messages[col].format(formatted_values, varname = idx))
 
         if row['type'] in {'CAT', 'BOOL'}:
-            formatted_values['minifreqtable'] = freq_table(stats_object['freq'][idx], n_obs,
-                                                           templates.template('mini_freq_table'), 
-                                                           templates.template('mini_freq_table_row'), 
-                                                           3, 
-                                                           templates.mini_freq_table_nb_col[row['type']])
+#            formatted_values['minifreqtable'] = freq_table(stats_object['freq'][idx], n_obs,
+#                                                           templates.template('mini_freq_table'), 
+#                                                           templates.template('mini_freq_table_row'), 
+#                                                           3, 
+#                                                           templates.mini_freq_table_nb_col[row['type']])
 
             if row['distinct_count'] > 50:
                 messages.append(templates.messages['HIGH_CARDINALITY'].format(formatted_values, varname = idx))
@@ -162,10 +164,11 @@ def to_html(sample, stats_object):
                 row_classes['distinct_count'] = ""
 
         if row['type'] == 'UNIQUE':
-            obs = stats_object['freq'][idx].index
+            obs = stats_object['freq'][idx]
 
-            formatted_values['firstn'] = pd.DataFrame(obs[0:3], columns=["First 3 values"]).to_html(classes="example_values", index=False)
-            formatted_values['lastn'] = pd.DataFrame(obs[-3:], columns=["Last 3 values"]).to_html(classes="example_values", index=False)
+            formatted_values['firstn'] = pd.DataFrame(obs.head(3).to_dense(), columns=["First 3 values"]).to_html(classes="example_values", index=False)
+            # TODO: last
+            formatted_values['lastn'] = pd.DataFrame(obs.head(3).to_dense(), columns=["Last 3 values"]).to_html(classes="example_values", index=False)
         if row['type'] == 'UNSUPPORTED':
             formatted_values['varname'] = idx
             messages.append(templates.messages[row['type']].format(formatted_values))
@@ -173,10 +176,11 @@ def to_html(sample, stats_object):
             formatted_values['varname'] = idx
             messages.append(templates.messages[row['type']].format(formatted_values))
         else:
-            formatted_values['freqtable'] = freq_table(stats_object['freq'][idx], n_obs,
-                                                       templates.template('freq_table'), templates.template('freq_table_row'), 10)
-            formatted_values['firstn_expanded'] = extreme_obs_table(stats_object['freq'][idx], templates.template('freq_table'), templates.template('freq_table_row'), 5, n_obs, ascending = True)
-            formatted_values['lastn_expanded'] = extreme_obs_table(stats_object['freq'][idx], templates.template('freq_table'), templates.template('freq_table_row'), 5, n_obs, ascending = False)
+            pass
+            #formatted_values['freqtable'] = freq_table(stats_object['freq'][idx], n_obs,
+            #                                           templates.template('freq_table'), templates.template('freq_table_row'), 10)
+            #formatted_values['firstn_expanded'] = extreme_obs_table(stats_object['freq'][idx], templates.template('freq_table'), templates.template('freq_table_row'), 5, n_obs, ascending = True)
+            #formatted_values['lastn_expanded'] = extreme_obs_table(stats_object['freq'][idx], templates.template('freq_table'), templates.template('freq_table_row'), 5, n_obs, ascending = False)
 
         rows_html += templates.row_templates_dict[row['type']].render(values=formatted_values, row_classes=row_classes)
 
