@@ -183,7 +183,7 @@ def describe_supported(series, **kwargs):
     if count > distinct_count > 1:
         mode = series.mode().iloc[0]
     else:
-        mode = series[0]
+        mode = series.head(1).to_dense()[0]
 
     results_data = {'count': count,
                     'distinct_count': distinct_count,

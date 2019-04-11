@@ -44,10 +44,12 @@ def to_html(sample, stats_object):
             "stats_object badly formatted. Did you generate this using the pandas_profiling.describe() function?")
 
     def fmt(value, name):
-        if value is None or value != value:
+        #from pyspark.sql import Column, DataFrame
+        #is isinstance(value, Column):
+        #  if value.isnull().any():
+        #    return 
+        if pd.isnull(value):
             return ""
-        #if pd.isnull(value):
-        #    return ""
         if name in value_formatters:
             return value_formatters[name](value)
         elif isinstance(value, float):
@@ -143,7 +145,8 @@ def to_html(sample, stats_object):
         row_classes = {}
 
         for col, value in six.iteritems(row):
-            formatted_values[col] = fmt(value, col)
+            formatted_value = fmt(value, col)
+            formatted_values[col] = formatted_value
 
         for col in set(row.index) & six.viewkeys(row_formatters):
             row_classes[col] = row_formatters[col](row[col])
