@@ -82,12 +82,13 @@ def to_html(sample, stats_object):
 
         freq_rows_html = u''
 
+        top_rows = freqtable.head(max_number_to_print).to_dense()
         if max_number_to_print > n:
                 max_number_to_print=n
 
         if max_number_to_print < len(freqtable):
-            freq_other = sum(freqtable.iloc[max_number_to_print:])
-            min_freq = freqtable.values[max_number_to_print]
+            freq_other = freqtable.sum() - top_rows.sum()
+            min_freq = top_rows.values[max_number_to_print-1]
         else:
             freq_other = 0
             min_freq = 0
@@ -98,9 +99,8 @@ def to_html(sample, stats_object):
         max_freq = max(freqtable.head(1).to_dense().iloc[0], freq_other, freq_missing)
 
         # TODO: Correctly sort missing and other
-        rows = freqtable.head(max_number_to_print+1).to_dense()
 
-        for label, freq in six.iteritems(rows.iloc[0:max_number_to_print]):
+        for label, freq in six.iteritems(top_rows):
             freq_rows_html += _format_row(freq, label, max_freq, row_template, n)
 
         if freq_other > min_freq:
