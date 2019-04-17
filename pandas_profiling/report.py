@@ -44,10 +44,6 @@ def to_html(sample, stats_object):
             "stats_object badly formatted. Did you generate this using the pandas_profiling.describe() function?")
 
     def fmt(value, name):
-        #from pyspark.sql import Column, DataFrame
-        #is isinstance(value, Column):
-        #  if value.isnull().any():
-        #    return 
         if pd.isnull(value):
             return ""
         if name in value_formatters:
@@ -145,8 +141,7 @@ def to_html(sample, stats_object):
         row_classes = {}
 
         for col, value in six.iteritems(row):
-            formatted_value = fmt(value, col)
-            formatted_values[col] = formatted_value
+            formatted_values[col] = fmt(value, col)
 
         for col in set(row.index) & six.viewkeys(row_formatters):
             row_classes[col] = row_formatters[col](row[col])
@@ -154,11 +149,11 @@ def to_html(sample, stats_object):
                 messages.append(templates.messages[col].format(formatted_values, varname = idx))
 
         if row['type'] in {'CAT', 'BOOL'}:
-#            formatted_values['minifreqtable'] = freq_table(stats_object['freq'][idx], n_obs,
-#                                                           templates.template('mini_freq_table'), 
-#                                                           templates.template('mini_freq_table_row'), 
-#                                                           3, 
-#                                                           templates.mini_freq_table_nb_col[row['type']])
+            formatted_values['minifreqtable'] = freq_table(stats_object['freq'][idx], n_obs,
+                                                           templates.template('mini_freq_table'), 
+                                                           templates.template('mini_freq_table_row'), 
+                                                           3, 
+                                                           templates.mini_freq_table_nb_col[row['type']])
 
             if row['distinct_count'] > 50:
                 messages.append(templates.messages['HIGH_CARDINALITY'].format(formatted_values, varname = idx))
